@@ -273,7 +273,7 @@
     .legend-gradient {
       height: 14px;
       border-radius: 999px;
-      background: linear-gradient(90deg, #d73027, #fc8d59, #fee08b, #91cf60, #1a9850);
+      background: linear-gradient(90deg, #C52115, #F5B4B0, #D4F1DB, #92D050, #00B050);
       box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
     }
     .legend-scale {
@@ -484,7 +484,7 @@
   <script src="https://unpkg.com/leaflet-simple-map-screenshoter@0.5.0/dist/leaflet-simple-map-screenshoter.js"></script>
   <script>
     const GEOJSON_URL = 'assets/liveability_heatmap.geojson';
-    const LEGEND = [{"range_min": 0, "range_max": 20, "label": "Very low liveable", "color": "#d73027"}, {"range_min": 21, "range_max": 40, "label": "Low liveable", "color": "#fc8d59"}, {"range_min": 41, "range_max": 60, "label": "Moderate liveable", "color": "#fee08b"}, {"range_min": 61, "range_max": 80, "label": "High Liveable", "color": "#91cf60"}, {"range_min": 81, "range_max": 100, "label": "Very high liveable", "color": "#1a9850"}];
+    const LEGEND = [{"range_min": 0, "range_max": 20, "label": "Very low liveable", "color": "#C52115"}, {"range_min": 21, "range_max": 40, "label": "Low liveable", "color": "#F5B4B0"}, {"range_min": 41, "range_max": 60, "label": "Moderate liveable", "color": "#D4F1DB"}, {"range_min": 61, "range_max": 80, "label": "High Liveable", "color": "#92D050"}, {"range_min": 81, "range_max": 100, "label": "Very high liveable", "color": "#00B050"}];
     const NO_DATA = {"color": "#FFFFFF", "label": "Data not available"};
     const TOWNS = ["Thimphu", "Phuentsholing", "Samdrup Jongkhar", "Mongar"];
     let GEOJSON = { type: 'FeatureCollection', features: [] };
@@ -679,13 +679,79 @@
       setTimeout(() => el.classList.remove('show'), 2600);
     }
 
-    async function downloadImage() {
-      const btn = document.getElementById('btn-download');
-      btn.disabled = true;
-      btn.lastChild.textContent = ' Preparing…';
-      try {
-        await document.fonts.ready;
-        const dataUrl = await screenshoter.takeScreen('image');
+    function drawMapLabels(ctx, k, offsetY) {
+      const mapW = map.getContainer().clientWidth;
+      const mapH = map.getContainer().clientHeight;
+      const placed = [];
+
+      const entries = Object.entries(layersByGroup)
+        .map(([key, lyrs]) => ({ key, lyrs, p: lyrs[0].feature.properties }))
+        .filter(e => e.p.has_data)
+        .sort((a, b) => b.p.index - a.p.index);
+
+      entries.forEach(({ key, lyrs, p }) => {
+        /* anchor on the largest polygon of the group */
+        let best = null, bestArea = -1;
+        lyrs.forEach(l => {
+          const b = l.getBounds();
+          const a = (b.getEast() - b.getWest()) * (b.getNorth() - b.getSouth());
+          if (a > bestArea) { bestArea = a; best = b; }
+        });
+        const pt = map.latLngToContainerPoint(best.getCenter());
+        if (pt.x < 30 || pt.y < 30 || pt.x > mapW - 30 || pt.y > mapH - 30) return;
+
+        const score = fmt(p.index);
+        const name = key.length > 22 ? key.slice(0, 21) + '…' : key;
+
+        ctx.font = `700 ${Math.round(14 * k)}px "DM Sans", sans-serif`;
+        const scoreW = ctx.measureText(score).width;
+        ctx.font = `500 ${Math.round(10.5 * k)}px "DM Sans", sans-serif`;
+        const nameW = ctx.measureText(name).width;
+        const w = Math.max(scoreW, nameW) + 18 * k;
+        const h = 38 * k;
+        let x = pt.x * k;
+        let y = offsetY + pt.y * k;
+
+        /* nudge down if overlapping an already placed label */
+        for (let tries = 0; tries < 5; tries++) {
+          const hit = placed.some(r =>
+            Math.abs(x - r.x) < (w + r.w) / 2 + 4 * k &&
+            Math.abs(y - r.y) < (h + r.h) / 2 + 4 * k);
+          if (!hit) break;
+          y += h + 6 * k;
+        }
+        placed.push({ x, y, w, h });
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(15, 30, 24, 0.25)';
+        ctx.shadowBlur = 8 * k;
+        ctx.shadowOffsetY = 2 * k;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.beginPath();
+        ctx.roundRect(x - w / 2, y - h / 2, w, h, 9 * k);
+        ctx.fill();
+        ctx.restore();
+
+        ctx.strokeStyle = p.color === '#FFFFFF' ? '#aebab4' : p.color;
+        ctx.lineWidth = Math.max(1.5, 2 * k);
+        ctx.beginPath();
+        ctx.roundRect(x - w / 2, y - h / 2, w, h, 9 * k);
+        ctx.stroke();
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#15211c';
+        ctx.font = `700 ${Math.round(14 * k)}px "DM Sans", sans-serif`;
+        ctx.fillText(score, x, y - 3 * k);
+        ctx.fillStyle = '#66736d';
+        ctx.font = `500 ${Math.round(10.5 * k)}px "DM Sans", sans-serif`;
+        ctx.fillText(name, x, y + 12 * k);
+        ctx.textAlign = 'left';
+      });
+    }
+
+    async function composeExport() {
+      await document.fonts.ready;
+      const dataUrl = await screenshoter.takeScreen('image');
         const img = new Image();
         await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = dataUrl; });
 
@@ -705,6 +771,7 @@
         ctx.fillStyle = '#fdfcfa';
         ctx.fillRect(0, 0, W, H);
         ctx.drawImage(img, 0, headerH);
+        drawMapLabels(ctx, k, headerH);
         ctx.strokeStyle = 'rgba(21,33,28,0.12)';
         ctx.lineWidth = Math.max(1, k);
         ctx.strokeRect(0.5, headerH + 0.5, W - 1, img.height - 1);
@@ -768,7 +835,15 @@
         ctx.fillText('Scores: BLS Liveability Survey 2026 · Boundaries: NSFD spatial database · Basemap © OpenStreetMap contributors, © CARTO',
           pad, fy + footerH - Math.round(22 * k));
 
-        /* download */
+      return canvas;
+    }
+
+    async function downloadImage() {
+      const btn = document.getElementById('btn-download');
+      btn.disabled = true;
+      btn.lastChild.textContent = ' Preparing…';
+      try {
+        const canvas = await composeExport();
         const a = document.createElement('a');
         a.download = `bhutan-liveability-${activeTown.toLowerCase().replace(/\s+/g, '-')}.png`;
         a.href = canvas.toDataURL('image/png');
@@ -810,8 +885,21 @@
         return;
       }
 
-      const urlTown = new URLSearchParams(location.search).get('town');
+      const params = new URLSearchParams(location.search);
+      const urlTown = params.get('town');
       showTown(TOWNS.includes(urlTown) ? urlTown : TOWNS[0]);
+
+      /* debug: render the export composition instead of downloading */
+      if (params.has('export')) {
+        setTimeout(async () => {
+          const canvas = await composeExport();
+          document.body.innerHTML = '';
+          const im = document.createElement('img');
+          im.src = canvas.toDataURL('image/png');
+          im.style.cssText = 'width:100vw;height:100vh;object-fit:contain;background:#444;display:block';
+          document.body.appendChild(im);
+        }, 5000);
+      }
     }
 
     boot();

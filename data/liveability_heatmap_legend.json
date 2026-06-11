@@ -4,31 +4,31 @@
       "range_min": 0,
       "range_max": 20,
       "label": "Very low liveable",
-      "color": "#d73027"
+      "color": "#C52115"
     },
     {
       "range_min": 21,
       "range_max": 40,
       "label": "Low liveable",
-      "color": "#fc8d59"
+      "color": "#F5B4B0"
     },
     {
       "range_min": 41,
       "range_max": 60,
       "label": "Moderate liveable",
-      "color": "#fee08b"
+      "color": "#D4F1DB"
     },
     {
       "range_min": 61,
       "range_max": 80,
       "label": "High Liveable",
-      "color": "#91cf60"
+      "color": "#92D050"
     },
     {
       "range_min": 81,
       "range_max": 100,
       "label": "Very high liveable",
-      "color": "#1a9850"
+      "color": "#00B050"
     }
   ],
   "no_data": {

@@ -1,8 +1,8 @@
 town,local_area,division,index,has_data,category,color
-Thimphu,"Dechencholing I, II, IIIa, IIIb, IV",Northern Thimphu,60.5,True,Moderate liveable,#fee08b
+Thimphu,"Dechencholing I, II, IIIa, IIIb, IV",Northern Thimphu,60.5,True,Moderate liveable,#D4F1DB
 Thimphu,"Taba 1a, 1b, 1c, IIb, IIc, IId",,,False,Data not available,#FFFFFF
 Thimphu,"Hejo Samtenling I a, I b, Ic, II, III",,,False,Data not available,#FFFFFF
-Thimphu,"Zilukha I, II, III, IV, V",Central Thimphu,60.3,True,Moderate liveable,#fee08b
+Thimphu,"Zilukha I, II, III, IV, V",Central Thimphu,60.3,True,Moderate liveable,#D4F1DB
 Thimphu,"Lower Motitang 1 a, 1 b, 1 c, 1 d, 1 e, II a, II b, III a, III b, III c",,,False,Data not available,#FFFFFF
 Thimphu,"Upper Motithang 1 a, 1 b, 1 c,",,,False,Data not available,#FFFFFF
 Thimphu,"Core a,b,c,d,e,f,g",,,False,Data not available,#FFFFFF
@@ -10,29 +10,29 @@ Thimphu,"Changangkha 1a, 1b, IIa, II b, IIc",,,False,Data not available,#FFFFFF
 Thimphu,"Changzamtog I a, Ib, IIa, IIb, IIIa, IIIb, IIIc, IIId, IV a, IV b",,,False,Data not available,#FFFFFF
 Thimphu,Yangchenphu,,,False,Data not available,#FFFFFF
 Thimphu,"Changdangdu, Changdangdu I,",,,False,Data not available,#FFFFFF
-Thimphu,"Lungtenphu 1 a, 1 b, 1 c, 1 d, 1 e, 1 ea, 1 f, II",Southern Thimphu,58.8,True,Moderate liveable,#fee08b
+Thimphu,"Lungtenphu 1 a, 1 b, 1 c, 1 d, 1 e, 1 ea, 1 f, II",Southern Thimphu,58.8,True,Moderate liveable,#D4F1DB
 Thimphu,Lungtenphu 1 e,,,False,Data not available,#FFFFFF
 Thimphu,"Semtokha a, b, c, d",,,False,Data not available,#FFFFFF
 Thimphu,Semtokha d,,,False,Data not available,#FFFFFF
 Thimphu,"Babesa 1 a, 1 b, 1 Ba, II",,,False,Data not available,#FFFFFF
-Mongar,LA 1,,64.0133,True,High Liveable,#91cf60
-Mongar,LA 2,,67.36,True,High Liveable,#91cf60
-Mongar,LA 3,,65.85,True,High Liveable,#91cf60
-Mongar,LA 4,,67.7133,True,High Liveable,#91cf60
-Mongar,LA 5,,63.8733,True,High Liveable,#91cf60
-Samdrup Jongkhar,Core,,70.104,True,High Liveable,#91cf60
-Samdrup Jongkhar,Service Center,,67.635,True,High Liveable,#91cf60
-Samdrup Jongkhar,Football ground side a and b,,67.75,True,High Liveable,#91cf60
+Mongar,LA 1,,64.0133,True,High Liveable,#92D050
+Mongar,LA 2,,67.36,True,High Liveable,#92D050
+Mongar,LA 3,,65.85,True,High Liveable,#92D050
+Mongar,LA 4,,67.7133,True,High Liveable,#92D050
+Mongar,LA 5,,63.8733,True,High Liveable,#92D050
+Samdrup Jongkhar,Core,,70.104,True,High Liveable,#92D050
+Samdrup Jongkhar,Service Center,,67.635,True,High Liveable,#92D050
+Samdrup Jongkhar,Football ground side a and b,,67.75,True,High Liveable,#92D050
 Samdrup Jongkhar,Behind Dzong,,,False,Data not available,#FFFFFF
-Samdrup Jongkhar,"Deothang 5a, 5b, 5ba, 5c",,65.5425,True,High Liveable,#91cf60
+Samdrup Jongkhar,"Deothang 5a, 5b, 5ba, 5c",,65.5425,True,High Liveable,#92D050
 Phuentsholing,Toorsatar,,,False,Data not available,#FFFFFF
-Phuentsholing,Amo Chu lap,,62.0633,True,High Liveable,#91cf60
-Phuentsholing,Dhamdara lap,,65.36,True,High Liveable,#91cf60
-Phuentsholing,"Core a, b, c, d, e, f, g, h, i, j, k, l, m",,68.63,True,High Liveable,#91cf60
-Phuentsholing,Kabraytar LAP,,67.7733,True,High Liveable,#91cf60
-Phuentsholing,Rinchending,,67.63,True,High Liveable,#91cf60
+Phuentsholing,Amo Chu lap,,62.0633,True,High Liveable,#92D050
+Phuentsholing,Dhamdara lap,,65.36,True,High Liveable,#92D050
+Phuentsholing,"Core a, b, c, d, e, f, g, h, i, j, k, l, m",,68.63,True,High Liveable,#92D050
+Phuentsholing,Kabraytar LAP,,67.7733,True,High Liveable,#92D050
+Phuentsholing,Rinchending,,67.63,True,High Liveable,#92D050
 Phuentsholing,Kareyphu LAP,,,False,Data not available,#FFFFFF
 Phuentsholing,Ahlay LAP,,,False,Data not available,#FFFFFF
 Phuentsholing,Pekarzhing LAP,,,False,Data not available,#FFFFFF
-Phuentsholing,Pasakha Lap,,68.45,True,High Liveable,#91cf60
+Phuentsholing,Pasakha Lap,,68.45,True,High Liveable,#92D050
 Phuentsholing,Pasakha Industrail Estate,,,False,Data not available,#FFFFFF

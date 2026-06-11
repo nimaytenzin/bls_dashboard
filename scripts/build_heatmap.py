@@ -30,12 +30,13 @@ TOWN_DB_NAMES = {
     "Samdrup Jongkhar": "Samdrupjongkhar Thromde",
 }
 
+# Colours taken from the source Excel legend (theme fills sampled / explicit fills read)
 LEGEND = [
-    {"range_min": 0, "range_max": 20, "label": "Very low liveable", "color": "#d73027"},
-    {"range_min": 21, "range_max": 40, "label": "Low liveable", "color": "#fc8d59"},
-    {"range_min": 41, "range_max": 60, "label": "Moderate liveable", "color": "#fee08b"},
-    {"range_min": 61, "range_max": 80, "label": "High Liveable", "color": "#91cf60"},
-    {"range_min": 81, "range_max": 100, "label": "Very high liveable", "color": "#1a9850"},
+    {"range_min": 0, "range_max": 20, "label": "Very low liveable", "color": "#C52115"},
+    {"range_min": 21, "range_max": 40, "label": "Low liveable", "color": "#F5B4B0"},
+    {"range_min": 41, "range_max": 60, "label": "Moderate liveable", "color": "#D4F1DB"},
+    {"range_min": 61, "range_max": 80, "label": "High Liveable", "color": "#92D050"},
+    {"range_min": 81, "range_max": 100, "label": "Very high liveable", "color": "#00B050"},
 ]
 NO_DATA_COLOR = "#FFFFFF"
 NO_DATA_LABEL = "Data not available"
@@ -313,7 +314,10 @@ def fetch_thimphu_divisions(conn):
             f.division,
             ct.lap_count,
             ST_AsGeoJSON(
-                ST_CollectionExtract(ST_MakeValid(ST_SnapToGrid(f.geom, 0.000005)), 3)
+                -- ~1 m outward buffer: zones overlap microscopically instead of
+                -- leaving snap-artifact slivers along shared borders
+                ST_CollectionExtract(
+                    ST_MakeValid(ST_SnapToGrid(ST_Buffer(f.geom, 0.00001), 0.000005)), 3)
             )::json AS geometry
         FROM final f
         JOIN counts ct ON ct.division = f.division
