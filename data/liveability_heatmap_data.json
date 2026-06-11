@@ -1,0 +1,719 @@
+{
+  "title": "Liveability Heat Map Data",
+  "description": "Local area liveability index scores by town for heat map visualization",
+  "source": "Liveability Data for heatmaps (1).xlsx",
+  "fields": {
+    "town": "Administrative town/city",
+    "local_area": "Local area name or identifier",
+    "division": "Optional TSP division grouping (Thimphu only)",
+    "index": "Liveability index score (0-100)",
+    "has_data": "Whether index value is available",
+    "category": "Liveability category label",
+    "color": "Suggested hex color for heat map rendering"
+  },
+  "index_field": "index",
+  "join_key": "local_area",
+  "no_data": {
+    "value": null,
+    "color": "#FFFFFF",
+    "label": "Data not available"
+  },
+  "legend": [
+    {
+      "range_min": 0,
+      "range_max": 20,
+      "label": "Very low liveable",
+      "color": "#d73027"
+    },
+    {
+      "range_min": 21,
+      "range_max": 40,
+      "label": "Low liveable",
+      "color": "#fc8d59"
+    },
+    {
+      "range_min": 41,
+      "range_max": 60,
+      "label": "Moderate liveable",
+      "color": "#fee08b"
+    },
+    {
+      "range_min": 61,
+      "range_max": 80,
+      "label": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "range_min": 81,
+      "range_max": 100,
+      "label": "Very high liveable",
+      "color": "#1a9850"
+    }
+  ],
+  "records": [
+    {
+      "town": "Mongar",
+      "local_area": "LA 1",
+      "division": null,
+      "index": 64.0133,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Mongar",
+      "local_area": "LA 2",
+      "division": null,
+      "index": 67.36,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Mongar",
+      "local_area": "LA 3",
+      "division": null,
+      "index": 65.85,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Mongar",
+      "local_area": "LA 4",
+      "division": null,
+      "index": 67.7133,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Mongar",
+      "local_area": "LA 5",
+      "division": null,
+      "index": 63.8733,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Ahlay LAP",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Amo Chu lap",
+      "division": null,
+      "index": 62.0633,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Core a, b, c, d, e, f, g, h, i, j, k, l, m",
+      "division": null,
+      "index": 68.63,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Dhamdara lap",
+      "division": null,
+      "index": 65.36,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Kabraytar LAP",
+      "division": null,
+      "index": 67.7733,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Kareyphu LAP",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Pasakha Industrail Estate",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Pasakha Lap",
+      "division": null,
+      "index": 68.45,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Pekarzhing LAP",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Rinchending",
+      "division": null,
+      "index": 67.63,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Phuentsholing",
+      "local_area": "Toorsatar",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Samdrup Jongkhar",
+      "local_area": "Behind Dzong",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Samdrup Jongkhar",
+      "local_area": "Core",
+      "division": null,
+      "index": 70.104,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Samdrup Jongkhar",
+      "local_area": "Deothang 5a, 5b, 5ba, 5c",
+      "division": null,
+      "index": 65.5425,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Samdrup Jongkhar",
+      "local_area": "Football ground side a and b",
+      "division": null,
+      "index": 67.75,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Samdrup Jongkhar",
+      "local_area": "Service Center",
+      "division": null,
+      "index": 67.635,
+      "has_data": true,
+      "category": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Babesa 1 a, 1 b, 1 Ba, II",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Changangkha 1a, 1b, IIa, II b, IIc",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Changdangdu, Changdangdu I,",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Changzamtog I a, Ib, IIa, IIb, IIIa, IIIb, IIIc, IIId, IV a, IV b",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Core a,b,c,d,e,f,g",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Dechencholing I, II, IIIa, IIIb, IV",
+      "division": "Northern Thimphu",
+      "index": 60.5,
+      "has_data": true,
+      "category": "Moderate liveable",
+      "color": "#fee08b"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Hejo Samtenling I a, I b, Ic, II, III",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Lower Motitang 1 a, 1 b, 1 c, 1 d, 1 e, II a, II b, III a, III b, III c",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Lungtenphu 1 a, 1 b, 1 c, 1 d, 1 e, 1 ea, 1 f, II",
+      "division": "Southern Thimphu",
+      "index": 58.8,
+      "has_data": true,
+      "category": "Moderate liveable",
+      "color": "#fee08b"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Lungtenphu 1 e",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Semtokha a, b, c, d",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Semtokha d",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Taba 1a, 1b, 1c, IIb, IIc, IId",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Upper Motithang 1 a, 1 b, 1 c,",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Yangchenphu",
+      "division": null,
+      "index": NaN,
+      "has_data": false,
+      "category": "Very high liveable",
+      "color": "#1a9850"
+    },
+    {
+      "town": "Thimphu",
+      "local_area": "Zilukha I, II, III, IV, V",
+      "division": "Central Thimphu",
+      "index": 60.3,
+      "has_data": true,
+      "category": "Moderate liveable",
+      "color": "#fee08b"
+    }
+  ],
+  "by_town": {
+    "Mongar": {
+      "local_areas": [
+        {
+          "local_area": "LA 1",
+          "division": null,
+          "index": 64.0133,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "LA 2",
+          "division": null,
+          "index": 67.36,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "LA 3",
+          "division": null,
+          "index": 65.85,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "LA 4",
+          "division": null,
+          "index": 67.7133,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "LA 5",
+          "division": null,
+          "index": 63.8733,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        }
+      ]
+    },
+    "Phuentsholing": {
+      "local_areas": [
+        {
+          "local_area": "Ahlay LAP",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Amo Chu lap",
+          "division": null,
+          "index": 62.0633,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "Core a, b, c, d, e, f, g, h, i, j, k, l, m",
+          "division": null,
+          "index": 68.63,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "Dhamdara lap",
+          "division": null,
+          "index": 65.36,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "Kabraytar LAP",
+          "division": null,
+          "index": 67.7733,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "Kareyphu LAP",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Pasakha Industrail Estate",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Pasakha Lap",
+          "division": null,
+          "index": 68.45,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "Pekarzhing LAP",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Rinchending",
+          "division": null,
+          "index": 67.63,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "Toorsatar",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        }
+      ]
+    },
+    "Samdrup Jongkhar": {
+      "local_areas": [
+        {
+          "local_area": "Behind Dzong",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Core",
+          "division": null,
+          "index": 70.104,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "Deothang 5a, 5b, 5ba, 5c",
+          "division": null,
+          "index": 65.5425,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "Football ground side a and b",
+          "division": null,
+          "index": 67.75,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        },
+        {
+          "local_area": "Service Center",
+          "division": null,
+          "index": 67.635,
+          "has_data": true,
+          "category": "High Liveable",
+          "color": "#91cf60"
+        }
+      ]
+    },
+    "Thimphu": {
+      "local_areas": [
+        {
+          "local_area": "Babesa 1 a, 1 b, 1 Ba, II",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Changangkha 1a, 1b, IIa, II b, IIc",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Changdangdu, Changdangdu I,",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Changzamtog I a, Ib, IIa, IIb, IIIa, IIIb, IIIc, IIId, IV a, IV b",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Core a,b,c,d,e,f,g",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Dechencholing I, II, IIIa, IIIb, IV",
+          "division": "Northern Thimphu",
+          "index": 60.5,
+          "has_data": true,
+          "category": "Moderate liveable",
+          "color": "#fee08b"
+        },
+        {
+          "local_area": "Hejo Samtenling I a, I b, Ic, II, III",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Lower Motitang 1 a, 1 b, 1 c, 1 d, 1 e, II a, II b, III a, III b, III c",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Lungtenphu 1 a, 1 b, 1 c, 1 d, 1 e, 1 ea, 1 f, II",
+          "division": "Southern Thimphu",
+          "index": 58.8,
+          "has_data": true,
+          "category": "Moderate liveable",
+          "color": "#fee08b"
+        },
+        {
+          "local_area": "Lungtenphu 1 e",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Semtokha a, b, c, d",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Semtokha d",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Taba 1a, 1b, 1c, IIb, IIc, IId",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Upper Motithang 1 a, 1 b, 1 c,",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Yangchenphu",
+          "division": null,
+          "index": NaN,
+          "has_data": false,
+          "category": "Very high liveable",
+          "color": "#1a9850"
+        },
+        {
+          "local_area": "Zilukha I, II, III, IV, V",
+          "division": "Central Thimphu",
+          "index": 60.3,
+          "has_data": true,
+          "category": "Moderate liveable",
+          "color": "#fee08b"
+        }
+      ],
+      "divisions": [
+        {
+          "town": "Thimphu",
+          "division": "Northern Thimphu",
+          "index": 60.5
+        },
+        {
+          "town": "Thimphu",
+          "division": "Central Thimphu",
+          "index": 60.3
+        },
+        {
+          "town": "Thimphu",
+          "division": "Southern Thimphu",
+          "index": 58.8
+        }
+      ]
+    }
+  }
+}

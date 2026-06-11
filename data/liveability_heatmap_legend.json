@@ -1,0 +1,38 @@
+{
+  "ranges": [
+    {
+      "range_min": 0,
+      "range_max": 20,
+      "label": "Very low liveable",
+      "color": "#d73027"
+    },
+    {
+      "range_min": 21,
+      "range_max": 40,
+      "label": "Low liveable",
+      "color": "#fc8d59"
+    },
+    {
+      "range_min": 41,
+      "range_max": 60,
+      "label": "Moderate liveable",
+      "color": "#fee08b"
+    },
+    {
+      "range_min": 61,
+      "range_max": 80,
+      "label": "High Liveable",
+      "color": "#91cf60"
+    },
+    {
+      "range_min": 81,
+      "range_max": 100,
+      "label": "Very high liveable",
+      "color": "#1a9850"
+    }
+  ],
+  "no_data": {
+    "color": "#FFFFFF",
+    "label": "Data not available"
+  }
+}

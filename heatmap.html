@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bhutan Liveability Index · Heat Map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=DM+Sans:opsz,wght@9..40,300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --paper: #f5f3ee;
+      --panel: #fdfcfa;
+      --ink: #15211c;
+      --muted: #66736d;
+      --faint: #9aa6a0;
+      --line: rgba(21, 33, 28, 0.09);
+      --accent: #1f6f54;
+      --accent-deep: #14503c;
+      --accent-soft: #e3f2ea;
+      --gold: #c8a24a;
+      --shadow-lg: 0 30px 70px rgba(15, 30, 24, 0.16);
+      --shadow-sm: 0 4px 16px rgba(15, 30, 24, 0.08);
+      --sidebar-w: 400px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    /* ---------- map ---------- */
+    #map {
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      left: var(--sidebar-w);
+      background: #eef0ec;
+    }
+
+    .leaflet-container { font-family: "DM Sans", system-ui, sans-serif; }
+    .leaflet-popup-content-wrapper {
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    .leaflet-popup-content { margin: 0; line-height: 1.4; }
+    .leaflet-popup-tip { box-shadow: none; }
+    .leaflet-tooltip.area-tip {
+      background: rgba(21, 33, 28, 0.92);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+    }
+    .leaflet-tooltip.area-tip::before { display: none; }
+
+    /* ---------- sidebar ---------- */
+    .sidebar {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      z-index: 1100;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: #cfd6d1 transparent;
+    }
+
+    .brand {
+      padding: 30px 28px 22px;
+      background:
+        radial-gradient(120% 90% at 0% 0%, rgba(31, 111, 84, 0.10), transparent 60%),
+        radial-gradient(90% 70% at 100% 0%, rgba(200, 162, 74, 0.10), transparent 55%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .eyebrow::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(31,111,84,0.35), transparent);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 2.05rem;
+      font-weight: 420;
+      line-height: 1.04;
+      letter-spacing: -0.015em;
+    }
+    .brand h1 em {
+      font-style: italic;
+      color: var(--accent-deep);
+    }
+    .brand p {
+      margin: 12px 0 0;
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 32ch;
+    }
+
+    section { padding: 20px 28px; border-bottom: 1px solid var(--line); }
+    section:last-of-type { border-bottom: none; }
+
+    .section-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 14px;
+    }
+    .section-label small {
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: var(--faint);
+    }
+
+    /* towns */
+    .town-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .town-tab {
+      appearance: none;
+      font: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 9px 15px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+    .town-tab:hover { transform: translateY(-1.5px); border-color: rgba(31,111,84,0.4); box-shadow: var(--shadow-sm); }
+    .town-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(31, 111, 84, 0.32);
+    }
+
+    /* stats */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .stat {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 8px 10px;
+      text-align: center;
+      transition: transform 0.25s ease;
+    }
+    .stat:hover { transform: translateY(-2px); }
+    .stat strong {
+      display: block;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 1.45rem;
+      font-weight: 480;
+      line-height: 1;
+      color: var(--accent-deep);
+      font-variant-numeric: tabular-nums;
+    }
+    .stat span {
+      display: block;
+      margin-top: 5px;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    /* ranking */
+    .rank-item {
+      padding: 9px 10px;
+      margin: 0 -10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.18s ease;
+    }
+    .rank-item:hover { background: rgba(31, 111, 84, 0.06); }
+    .rank-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 5px;
+    }
+    .rank-name {
+      font-size: 0.82rem;
+      font-weight: 550;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .rank-val {
+      font-size: 0.82rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent-deep);
+    }
+    .rank-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(21, 33, 28, 0.07);
+      overflow: hidden;
+    }
+    .rank-bar i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      transform-origin: left;
+      animation: grow 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    .nodata-block { margin-top: 14px; }
+    .nodata-block h4 {
+      margin: 0 0 8px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+    .nodata-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .nodata-chips span {
+      font-size: 0.7rem;
+      color: var(--muted);
+      background: #fff;
+      border: 1px dashed rgba(21,33,28,0.18);
+      padding: 4px 9px;
+      border-radius: 999px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .nodata-chips span:hover { border-color: var(--accent); color: var(--accent-deep); }
+
+    /* legend */
+    .legend-gradient {
+      height: 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #d73027, #fc8d59, #fee08b, #91cf60, #1a9850);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+    }
+    .legend-scale {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--faint);
+      margin: 6px 2px 14px;
+      font-variant-numeric: tabular-nums;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 7px 0;
+      font-size: 0.84rem;
+    }
+    .legend-item + .legend-item { border-top: 1px solid var(--line); }
+    .swatch {
+      width: 17px; height: 17px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+    }
+    .legend-meta { display: flex; justify-content: space-between; flex: 1; gap: 10px; }
+    .legend-meta small { color: var(--faint); font-variant-numeric: tabular-nums; }
+
+    .note {
+      margin-top: 14px;
+      padding: 11px 13px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .credits {
+      padding: 16px 28px 24px;
+      font-size: 0.68rem;
+      color: var(--faint);
+      line-height: 1.6;
+    }
+
+    /* ---------- floating download ---------- */
+    .fab {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 1100;
+      display: flex;
+      gap: 10px;
+    }
+    .btn-download {
+      appearance: none;
+      border: none;
+      font: inherit;
+      font-size: 0.86rem;
+      font-weight: 650;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      cursor: pointer;
+      box-shadow: var(--shadow-lg);
+      transition: all 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+    .btn-download:hover { transform: translateY(-2px); background: #233830; }
+    .btn-download:disabled { opacity: 0.65; cursor: wait; transform: none; }
+    .btn-download svg { width: 16px; height: 16px; }
+
+    /* popup */
+    .popup { min-width: 230px; }
+    .popup-header {
+      padding: 14px 16px 12px;
+      background: linear-gradient(135deg, var(--accent-deep), var(--accent));
+      color: #fff;
+    }
+    .popup-header h3 { margin: 0; font-size: 1rem; font-weight: 650; }
+    .popup-header .crumb { margin-top: 4px; font-size: 0.76rem; opacity: 0.85; }
+    .popup-body { padding: 14px 16px 15px; }
+    .popup-score { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .score-ring {
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 750;
+      font-size: 0.95rem;
+      border: 3.5px solid currentColor;
+      background: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+    .score-label { flex: 1; font-size: 0.9rem; font-weight: 650; line-height: 1.3; }
+    .popup-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 7px 0;
+      border-top: 1px solid var(--line);
+      font-size: 0.8rem;
+    }
+    .popup-row span:first-child { color: var(--muted); flex-shrink: 0; }
+    .popup-row span:last-child { text-align: right; font-weight: 550; }
+
+    /* toast */
+    #toast {
+      position: absolute;
+      bottom: 26px;
+      left: calc(var(--sidebar-w) + 26px);
+      z-index: 1200;
+      background: var(--ink);
+      color: #fff;
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 880px) {
+      :root { --sidebar-w: 0px; }
+      #map { left: 0; bottom: 46vh; }
+      .sidebar {
+        top: auto;
+        width: 100%;
+        height: 46vh;
+        border-right: none;
+        border-top: 1px solid var(--line);
+        bottom: 0;
+      }
+      .brand { padding: 18px 20px 14px; }
+      .brand h1 { font-size: 1.4rem; }
+      section { padding: 14px 20px; }
+      #toast { left: 20px; bottom: calc(46vh + 18px); }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="eyebrow">Bhutan Living Standards · 2026</div>
+      <h1>Liveability <em>Index</em><br />Heat Map</h1>
+      <p>Local-area liveability scores mapped on official LAP boundaries. Click a boundary or a ranked area to explore.</p>
+    </div>
+
+    <section>
+      <div class="section-label">Town</div>
+      <div class="town-tabs" id="town-tabs"></div>
+    </section>
+
+    <section>
+      <div class="section-label">At a glance <small id="stats-town"></small></div>
+      <div class="stats">
+        <div class="stat"><strong id="stat-areas">–</strong><span>Areas</span></div>
+        <div class="stat"><strong id="stat-scored">–</strong><span>Scored</span></div>
+        <div class="stat"><strong id="stat-avg">–</strong><span>Avg</span></div>
+        <div class="stat"><strong id="stat-max">–</strong><span>Best</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-label">Local areas · ranked</div>
+      <div id="ranking"></div>
+      <div class="nodata-block" id="nodata-block" hidden>
+        <h4>No data yet</h4>
+        <div class="nodata-chips" id="nodata-chips"></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-label">Liveability scale</div>
+      <div class="legend-gradient"></div>
+      <div class="legend-scale"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+      <div id="legend"></div>
+      <div class="note">White polygons mark local areas where liveability data is not yet available.</div>
+    </section>
+
+    <div class="credits">
+      Scores · BLS Liveability Survey 2026 &nbsp;·&nbsp; Boundaries · NSFD spatial database<br />
+      Basemap © OpenStreetMap contributors, © CARTO
+    </div>
+  </aside>
+
+  <div id="map"></div>
+
+  <div class="fab">
+    <button class="btn-download" id="btn-download" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Download image
+    </button>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-simple-map-screenshoter@0.5.0/dist/leaflet-simple-map-screenshoter.js"></script>
+  <script>
+    const GEOJSON_URL = 'assets/liveability_heatmap.geojson';
+    const LEGEND = [{"range_min": 0, "range_max": 20, "label": "Very low liveable", "color": "#d73027"}, {"range_min": 21, "range_max": 40, "label": "Low liveable", "color": "#fc8d59"}, {"range_min": 41, "range_max": 60, "label": "Moderate liveable", "color": "#fee08b"}, {"range_min": 61, "range_max": 80, "label": "High Liveable", "color": "#91cf60"}, {"range_min": 81, "range_max": 100, "label": "Very high liveable", "color": "#1a9850"}];
+    const NO_DATA = {"color": "#FFFFFF", "label": "Data not available"};
+    const TOWNS = ["Thimphu", "Phuentsholing", "Samdrup Jongkhar", "Mongar"];
+    let GEOJSON = { type: 'FeatureCollection', features: [] };
+
+    /* ---------- map setup ---------- */
+    const map = L.map('map', { zoomControl: false, renderer: L.canvas() });
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19,
+      crossOrigin: true,
+      attribution: '&copy; OpenStreetMap &copy; CARTO'
+    }).addTo(map);
+
+    const screenshoter = L.simpleMapScreenshoter({
+      hidden: true,
+      preventDownload: true,
+      hideElementsWithSelectors: ['.leaflet-control-container']
+    }).addTo(map);
+
+    let layer = null;
+    let activeTown = TOWNS[0];
+    let layersByGroup = {};
+
+    /* ---------- helpers ---------- */
+    const fmt = (v) => v == null ? '–' : (Math.round(v * 10) / 10).toFixed(1);
+
+    function groupsForTown(town) {
+      const m = new Map();
+      GEOJSON.features
+        .filter(f => f.properties.town === town)
+        .forEach(f => {
+          const p = f.properties;
+          const key = p.local_area_group || p.lap_name;
+          if (!m.has(key)) {
+            m.set(key, { name: key, index: p.index, has: p.has_data, color: p.color, category: p.category, count: 0 });
+          }
+          m.get(key).count++;
+        });
+      return [...m.values()];
+    }
+
+    function styleBase(feature) {
+      const p = feature.properties;
+      return {
+        fillColor: p.color,
+        color: p.has_data ? 'rgba(21,33,28,0.5)' : 'rgba(21,33,28,0.25)',
+        weight: p.has_data ? 1.3 : 0.9,
+        opacity: 0.95,
+        fillOpacity: p.has_data ? 0.8 : 0.55
+      };
+    }
+
+    function styleHover(feature) {
+      return { ...styleBase(feature), color: '#15211c', weight: 2.6, fillOpacity: 0.93 };
+    }
+
+    function popupHtml(p) {
+      const score = p.has_data ? fmt(p.index) : '–';
+      const ringColor = p.has_data ? p.color : '#cbd5d1';
+      return `
+        <div class="popup">
+          <div class="popup-header">
+            <h3>${p.lap_name}</h3>
+            <div class="crumb">${p.town} · ${p.dzongkhag} Dzongkhag</div>
+          </div>
+          <div class="popup-body">
+            <div class="popup-score">
+              <div class="score-ring" style="color:${ringColor}">${score}</div>
+              <div class="score-label">${p.category}</div>
+            </div>
+            ${p.local_area_group ? `<div class="popup-row"><span>Area group</span><span>${p.local_area_group}</span></div>` : ''}
+            ${p.division ? `<div class="popup-row"><span>Division</span><span>${p.division}</span></div>` : ''}
+            <div class="popup-row"><span>Zone type</span><span>${(p.zone_type || '–').toUpperCase()}</span></div>
+          </div>
+        </div>`;
+    }
+
+    function onEachFeature(feature, lyr) {
+      const p = feature.properties;
+      const key = p.local_area_group || p.lap_name;
+      (layersByGroup[key] = layersByGroup[key] || []).push(lyr);
+
+      lyr.bindPopup(popupHtml(p), { maxWidth: 320 });
+      lyr.bindTooltip(
+        `${p.lap_name}${p.has_data ? ' · ' + fmt(p.index) : ''}`,
+        { sticky: true, className: 'area-tip', direction: 'top', offset: [0, -6] }
+      );
+      lyr.on({
+        mouseover: e => e.target.setStyle(styleHover(feature)),
+        mouseout: e => layer && layer.resetStyle(e.target)
+      });
+    }
+
+    /* ---------- UI rendering ---------- */
+    function renderStats(town) {
+      const groups = groupsForTown(town);
+      const scored = groups.filter(g => g.has);
+      const avg = scored.length ? scored.reduce((s, g) => s + g.index, 0) / scored.length : null;
+      const max = scored.length ? Math.max(...scored.map(g => g.index)) : null;
+      document.getElementById('stats-town').textContent = town;
+      document.getElementById('stat-areas').textContent = groups.length;
+      document.getElementById('stat-scored').textContent = scored.length;
+      document.getElementById('stat-avg').textContent = fmt(avg);
+      document.getElementById('stat-max').textContent = fmt(max);
+    }
+
+    function zoomToGroup(key) {
+      const lyrs = layersByGroup[key];
+      if (!lyrs || !lyrs.length) return;
+      const bounds = L.latLngBounds([]);
+      lyrs.forEach(l => bounds.extend(l.getBounds()));
+      map.flyToBounds(bounds, { padding: [70, 70], duration: 0.7 });
+      lyrs.forEach(l => l.setStyle({ color: '#15211c', weight: 3, fillOpacity: 0.95 }));
+      setTimeout(() => lyrs.forEach(l => layer && layer.resetStyle(l)), 1500);
+    }
+
+    function renderRanking(town) {
+      const groups = groupsForTown(town);
+      const scored = groups.filter(g => g.has).sort((a, b) => b.index - a.index);
+      const unscored = groups.filter(g => !g.has);
+
+      document.getElementById('ranking').innerHTML = scored.map((g, i) => `
+        <div class="rank-item" data-group="${g.name.replace(/"/g, '&quot;')}">
+          <div class="rank-line">
+            <span class="rank-name" title="${g.name}">${i + 1}. ${g.name}</span>
+            <span class="rank-val">${fmt(g.index)}</span>
+          </div>
+          <div class="rank-bar"><i style="width:${g.index}%; background:${g.color}; animation-delay:${i * 45}ms"></i></div>
+        </div>`).join('') || '<div style="font-size:0.8rem;color:var(--muted)">No scored areas in this town.</div>';
+
+      const block = document.getElementById('nodata-block');
+      const chips = document.getElementById('nodata-chips');
+      if (unscored.length) {
+        block.hidden = false;
+        chips.innerHTML = unscored.map(g =>
+          `<span data-group="${g.name.replace(/"/g, '&quot;')}" title="${g.name}">${g.name}</span>`).join('');
+      } else {
+        block.hidden = true;
+      }
+
+      document.querySelectorAll('[data-group]').forEach(el =>
+        el.addEventListener('click', () => zoomToGroup(el.dataset.group)));
+    }
+
+    function renderLegend() {
+      document.getElementById('legend').innerHTML = LEGEND.map(item => `
+        <div class="legend-item">
+          <span class="swatch" style="background:${item.color}"></span>
+          <div class="legend-meta">
+            <span>${item.label}</span>
+            <small>${item.range_min}–${item.range_max}</small>
+          </div>
+        </div>`).join('') + `
+        <div class="legend-item">
+          <span class="swatch" style="background:${NO_DATA.color}; border:1px dashed #aebab4;"></span>
+          <div class="legend-meta"><span>${NO_DATA.label}</span><small>–</small></div>
+        </div>`;
+    }
+
+    function showTown(town) {
+      activeTown = town;
+      document.querySelectorAll('.town-tab').forEach(b =>
+        b.classList.toggle('active', b.dataset.town === town));
+      renderStats(town);
+
+      if (layer) map.removeLayer(layer);
+      layersByGroup = {};
+      layer = L.geoJSON({
+        type: 'FeatureCollection',
+        features: GEOJSON.features.filter(f => f.properties.town === town)
+      }, { style: styleBase, onEachFeature }).addTo(map);
+
+      renderRanking(town);
+
+      if (layer.getBounds().isValid()) {
+        if (firstLoad) {
+          map.fitBounds(layer.getBounds(), { padding: [60, 60] });
+          firstLoad = false;
+        } else {
+          map.flyToBounds(layer.getBounds(), { padding: [60, 60], duration: 0.8 });
+        }
+      }
+    }
+    let firstLoad = true;
+
+    /* ---------- PNG export: map + title + legend composed ---------- */
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2600);
+    }
+
+    async function downloadImage() {
+      const btn = document.getElementById('btn-download');
+      btn.disabled = true;
+      btn.lastChild.textContent = ' Preparing…';
+      try {
+        await document.fonts.ready;
+        const dataUrl = await screenshoter.takeScreen('image');
+        const img = new Image();
+        await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = dataUrl; });
+
+        const k = img.width / map.getContainer().clientWidth;   // device pixel ratio scale
+        const pad = Math.round(28 * k);
+        const headerH = Math.round(116 * k);
+        const footerH = Math.round(126 * k);
+        const W = img.width;
+        const H = headerH + img.height + footerH;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+
+        /* background + map */
+        ctx.fillStyle = '#fdfcfa';
+        ctx.fillRect(0, 0, W, H);
+        ctx.drawImage(img, 0, headerH);
+        ctx.strokeStyle = 'rgba(21,33,28,0.12)';
+        ctx.lineWidth = Math.max(1, k);
+        ctx.strokeRect(0.5, headerH + 0.5, W - 1, img.height - 1);
+
+        /* header */
+        const groups = groupsForTown(activeTown);
+        const scored = groups.filter(g => g.has);
+        const avg = scored.length ? (scored.reduce((s, g) => s + g.index, 0) / scored.length) : null;
+        const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        ctx.fillStyle = '#15211c';
+        ctx.font = `500 ${Math.round(31 * k)}px Fraunces, Georgia, serif`;
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText('Bhutan Liveability Index', pad, Math.round(52 * k));
+
+        ctx.fillStyle = '#1f6f54';
+        ctx.font = `700 ${Math.round(16 * k)}px "DM Sans", sans-serif`;
+        ctx.fillText(activeTown.toUpperCase(), pad, Math.round(82 * k));
+
+        ctx.fillStyle = '#66736d';
+        ctx.font = `400 ${Math.round(13.5 * k)}px "DM Sans", sans-serif`;
+        const sub = `${scored.length} of ${groups.length} local areas scored · Average index ${fmt(avg)} · ${dateStr}`;
+        ctx.fillText(sub, pad, Math.round(103 * k));
+
+        /* gold rule */
+        ctx.fillStyle = '#c8a24a';
+        ctx.fillRect(pad, Math.round(60 * k), Math.round(46 * k), Math.round(3 * k));
+
+        /* footer legend */
+        const items = [...LEGEND.map(l => ({ color: l.color, label: l.label, range: `${l.range_min}–${l.range_max}` })),
+                       { color: NO_DATA.color, label: NO_DATA.label, range: '', dashed: true }];
+        const fy = headerH + img.height;
+        const sw = Math.round(20 * k);
+        const itemW = (W - pad * 2) / items.length;
+
+        ctx.font = `600 ${Math.round(12 * k)}px "DM Sans", sans-serif`;
+        items.forEach((it, i) => {
+          const x = pad + i * itemW;
+          const y = fy + Math.round(34 * k);
+          ctx.fillStyle = it.color;
+          ctx.beginPath();
+          ctx.roundRect(x, y - sw + Math.round(4 * k), sw, sw, Math.round(5 * k));
+          ctx.fill();
+          ctx.strokeStyle = it.dashed ? '#aebab4' : 'rgba(0,0,0,0.12)';
+          if (it.dashed) ctx.setLineDash([4 * k, 3 * k]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = '#15211c';
+          ctx.fillText(it.label, x + sw + Math.round(9 * k), y - Math.round(3 * k), itemW - sw - Math.round(14 * k));
+          if (it.range) {
+            ctx.fillStyle = '#9aa6a0';
+            ctx.font = `500 ${Math.round(11 * k)}px "DM Sans", sans-serif`;
+            ctx.fillText(it.range, x + sw + Math.round(9 * k), y + Math.round(13 * k));
+            ctx.font = `600 ${Math.round(12 * k)}px "DM Sans", sans-serif`;
+          }
+        });
+
+        ctx.fillStyle = '#9aa6a0';
+        ctx.font = `400 ${Math.round(10.5 * k)}px "DM Sans", sans-serif`;
+        ctx.fillText('Scores: BLS Liveability Survey 2026 · Boundaries: NSFD spatial database · Basemap © OpenStreetMap contributors, © CARTO',
+          pad, fy + footerH - Math.round(22 * k));
+
+        /* download */
+        const a = document.createElement('a');
+        a.download = `bhutan-liveability-${activeTown.toLowerCase().replace(/\s+/g, '-')}.png`;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        toast(`Image saved · ${activeTown}`);
+      } catch (err) {
+        console.error(err);
+        toast('Export failed — try again once tiles finish loading.');
+      } finally {
+        btn.disabled = false;
+        btn.lastChild.textContent = ' Download image';
+      }
+    }
+
+    /* ---------- boot ---------- */
+    async function boot() {
+      const tabs = document.getElementById('town-tabs');
+      TOWNS.forEach(town => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'town-tab';
+        b.dataset.town = town;
+        b.textContent = town;
+        b.addEventListener('click', () => showTown(town));
+        tabs.appendChild(b);
+      });
+
+      document.getElementById('btn-download').addEventListener('click', downloadImage);
+      renderLegend();
+
+      try {
+        const res = await fetch(GEOJSON_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        GEOJSON = await res.json();
+      } catch (err) {
+        console.error(err);
+        toast('Could not load boundary data — serve this page over HTTP (assets/ must be reachable).');
+        map.setView([27.47, 89.64], 12);
+        return;
+      }
+
+      const urlTown = new URLSearchParams(location.search).get('town');
+      showTown(TOWNS.includes(urlTown) ? urlTown : TOWNS[0]);
+    }
+
+    boot();
+  </script>
+</body>
+</html>
