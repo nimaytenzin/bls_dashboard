@@ -25,7 +25,7 @@ DB_CONFIG = {
 
 TOWN_DB_NAMES = {
     "Thimphu": "Thimphu Thromde",
-    "Mongar": "Mongar",
+    "Mongar": "Monggar Town",
     "Phuentsholing": "Phuentshogling Thromde",
     "Samdrup Jongkhar": "Samdrupjongkhar Thromde",
 }
@@ -118,7 +118,7 @@ THIMPHU_LAP_GROUPS = {
     "Babesa 1 a, 1 b, 1 Ba, II": ["Babesa I a", "Babesa I b", "Babesa I Ba", "Babesa II"],
 }
 
-MONGAR_LAP_GROUPS = {f"LA {i}": [] for i in range(1, 6)}
+MONGAR_LAP_GROUPS = {f"LA {i}": [f"Lap {i}"] for i in range(1, 6)}
 PHUENTSHOLING_LAP_GROUPS = {
     "Toorsatar": ["Lap 1"],
     "Amo Chu lap": ["Lap 2"],
@@ -205,7 +205,12 @@ def fetch_boundaries(conn):
             saz.name AS lap_name,
             saz."areaCode" AS area_code,
             saz.type AS zone_type,
-            ST_AsGeoJSON(ST_SimplifyPreserveTopology(ST_MakeValid(saz.geom), 0.00005))::json AS geometry
+            ST_AsGeoJSON(
+                -- Mongar is exported raw, exactly as stored in the DB
+                CASE WHEN az.name = 'Monggar Town' THEN saz.geom
+                     ELSE ST_SimplifyPreserveTopology(ST_MakeValid(saz.geom), 0.00005)
+                END
+            )::json AS geometry
         FROM "SubAdministrativeZones" saz
         JOIN "AdministrativeZones" az ON az.id = saz."administrativeZoneId"
         JOIN "Dzongkhags" d ON d.id = az."dzongkhagId"
@@ -362,16 +367,7 @@ def build_thimphu_features(liveability_df, division_rows):
     return features
 
 
-def resolve_mongar_groups(rows):
-    by_code = sorted(rows, key=lambda r: r["area_code"])
-    for i in range(1, 6):
-        if i <= len(by_code):
-            MONGAR_LAP_GROUPS[f"LA {i}"] = [by_code[i - 1]["lap_name"]]
-
-
 def build_lap_lookup(liveability_df, boundaries):
-    resolve_mongar_groups([r for r in boundaries if r["town"] == TOWN_DB_NAMES["Mongar"]])
-
     lookup = {}
     for _, row in liveability_df.iterrows():
         town = row["town"]
@@ -455,6 +451,8 @@ def clean_geometry(geometry):
 def clean_geojson(geojson_data):
     total_holes = 0
     for feature in geojson_data["features"]:
+        if feature["properties"]["town"] == "Mongar":
+            continue  # Mongar geometry is kept exactly as stored in the DB
         total_holes += clean_geometry(feature["geometry"])
     return total_holes
 
