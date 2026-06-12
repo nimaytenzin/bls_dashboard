@@ -463,7 +463,7 @@
 
     <div class="credits">
       Scores · BLS Liveability Survey 2026 &nbsp;·&nbsp; Boundaries · NSFD spatial database<br />
-      Basemap © OpenStreetMap contributors, © CARTO
+      Basemap © OpenStreetMap contributors, © CARTO · Imagery © Google
     </div>
   </aside>
 
@@ -493,16 +493,31 @@
     const map = L.map('map', { zoomControl: false, renderer: L.canvas() });
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19,
-      crossOrigin: true,
-      attribution: '&copy; OpenStreetMap &copy; CARTO'
-    }).addTo(map);
+    const BASEMAPS = {
+      'Positron': L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        crossOrigin: true,
+        attribution: '&copy; OpenStreetMap &copy; CARTO'
+      }),
+      'Google Satellite': L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        crossOrigin: true,
+        attribution: 'Imagery &copy; Google'
+      })
+    };
+    BASEMAPS['Positron'].addTo(map);
+    let activeBasemap = 'Positron';
+    map.on('baselayerchange', e => { activeBasemap = e.name; });
+    L.control.layers(BASEMAPS, null, { position: 'topleft' }).addTo(map);
 
     const screenshoter = L.simpleMapScreenshoter({
       hidden: true,
       preventDownload: true,
-      hideElementsWithSelectors: ['.leaflet-control-container']
+      // Vector overlays are hidden in the raw screenshot; the export redraws
+      // boundaries onto the canvas itself (see drawBoundaries), which is
+      // reliable across renderers.
+      hideElementsWithSelectors: ['.leaflet-control-container', '.leaflet-overlay-pane']
     }).addTo(map);
 
     let layer = null;
@@ -679,6 +694,38 @@
       setTimeout(() => el.classList.remove('show'), 2600);
     }
 
+    function drawBoundaries(ctx, k, offsetY) {
+      if (!layer) return;
+      ctx.save();
+      ctx.translate(0, offsetY);
+      layer.eachLayer(l => {
+        if (!l.feature || !l.feature.geometry) return;
+        const style = styleBase(l.feature);
+        const geom = l.feature.geometry;
+        const polys = geom.type === 'MultiPolygon' ? geom.coordinates : [geom.coordinates];
+        polys.forEach(rings => {
+          ctx.beginPath();
+          rings.forEach(ring => {
+            ring.forEach(([lng, lat], i) => {
+              const pt = map.latLngToContainerPoint([lat, lng]);
+              if (i === 0) ctx.moveTo(pt.x * k, pt.y * k);
+              else ctx.lineTo(pt.x * k, pt.y * k);
+            });
+            ctx.closePath();
+          });
+          ctx.globalAlpha = style.fillOpacity;
+          ctx.fillStyle = style.fillColor;
+          ctx.fill('evenodd');
+          ctx.globalAlpha = style.opacity;
+          ctx.strokeStyle = style.color;
+          ctx.lineWidth = Math.max(1, style.weight * k);
+          ctx.stroke();
+        });
+      });
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+
     function drawMapLabels(ctx, k, offsetY) {
       const mapW = map.getContainer().clientWidth;
       const mapH = map.getContainer().clientHeight;
@@ -771,6 +818,7 @@
         ctx.fillStyle = '#fdfcfa';
         ctx.fillRect(0, 0, W, H);
         ctx.drawImage(img, 0, headerH);
+        drawBoundaries(ctx, k, headerH);
         drawMapLabels(ctx, k, headerH);
         ctx.strokeStyle = 'rgba(21,33,28,0.12)';
         ctx.lineWidth = Math.max(1, k);
@@ -832,7 +880,10 @@
 
         ctx.fillStyle = '#9aa6a0';
         ctx.font = `400 ${Math.round(10.5 * k)}px "DM Sans", sans-serif`;
-        ctx.fillText('Scores: BLS Liveability Survey 2026 · Boundaries: NSFD spatial database · Basemap © OpenStreetMap contributors, © CARTO',
+        const basemapCredit = activeBasemap === 'Google Satellite'
+          ? 'Imagery © Google'
+          : 'Basemap © OpenStreetMap contributors, © CARTO';
+        ctx.fillText(`Scores: BLS Liveability Survey 2026 · Boundaries: NSFD spatial database · ${basemapCredit}`,
           pad, fy + footerH - Math.round(22 * k));
 
       return canvas;
